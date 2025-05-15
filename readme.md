@@ -141,7 +141,7 @@ Follow these steps to install and configure Winlogbeat:
 **Specifications**
 
 - **RAM:** 4GB+
-- **HDD:** 0GB+
+- **HDD:** 40GB+
 - **OS:** Kali Linux
 
 ### **4️⃣ Install Splunk Server**  
@@ -224,7 +224,8 @@ sudo systemctl start grafana-server
 
 Access Grafana at http://localhost:3000 with default credentials admin/admin
 
-![Grafana](images/grafana-dashboard.png)
+![image](https://github.com/user-attachments/assets/75a4e743-8ad1-48d1-86ac-9a8bc4100155)
+
 
 ### **7️⃣ Install Suricata**  
 Install and configure Suricata NIDS:  
@@ -363,7 +364,7 @@ INFO:elastalert:Sent email to ['your_email@gmail.com']
 This workflow demonstrates how to simulate and detect C2 beaconing:  
 1️⃣ **Create a PowerShell beaconing script** on the Windows victim machine.  
 2️⃣ **Execute the script** to simulate periodic outbound connections.  
-3️⃣ **Observe the logs** in Splunk and Elasticsearch.  
+3️⃣ **Observe the logs** in Splunk.  
 4️⃣ **Visualize the beaconing pattern** in Grafana dashboards.  
 5️⃣ **Receive alerts** via ElastAlert when beaconing threshold is reached.  
 
@@ -391,39 +392,44 @@ Set-ExecutionPolicy Bypass -Scope Process
 ### **Step 1: Create Grafana Dashboards**  
 - Log into Grafana (http://localhost:3000) with admin/admin
 - Add Elasticsearch as a data source
-- Add elasticsearch URL : localhost:9200
+- Setup Elasticsearch URL : localhost:9200
 - Add Index: winlogbeat-*
-- Done 
-- Create a new dashboard with the following panels:
+- Done
 
-**PowerShell Network Connections Panel:**
+![image](https://github.com/user-attachments/assets/5e12baea-dcbf-4d91-8eb9-84fb7900770c)
+
+**Top Ip Source's Panel:**
 ```
 Query:
-  event_code:3 AND process.name:*powershell.exe*
+  event.code:"3"
+Visualization: Bar Chart
+Metrics: Count
+Group by: source.ip Terms
+```
+![image](https://github.com/user-attachments/assets/5f609610-d682-4f4f-9cf4-cb1b39511052)
+
+**Suspicious PowerShell Activity Panel:**
+```
+Query:
+  event.code:"3" AND destination.port:"8080" AND process.executable:*powershell.exe
 Visualization: Time Series
+Group by: destination.ip Terms
 Metrics: Count
-Group by: @timestamp (Auto interval)
+Then by: @timestamp (1m interval)
 ```
+![image](https://github.com/user-attachments/assets/3cdecf6e-3d24-4f0f-a7b0-938c8e5f903a)
 
-**Top Destination IPs Panel:**
+**Suspicious Parent-Child Process Execution:**
 ```
 Query:
-  event_code:3 AND process.name:*powershell.exe*
+  event.code:1 AND process.name:"powershell.exe" AND process.executable:/C:\\Users\\.*/
 Visualization: Table
-Group by: destination.ip (Terms)
-Metrics: Count
+Logs
 ```
+![image](https://github.com/user-attachments/assets/31847cbf-6dae-4607-8bdf-46381603a4d3)
 
-**Connection Frequency Heatmap:**
-```
-Query:
-  winlog.event_id:3 AND winlog.event_data.Image:*powershell.exe*
-Visualization: Heatmap
-Metrics: Count
-Group by: @timestamp (1m interval)
-```
-
-![Grafana Dashboard](https://github.com/user-attachments/assets/placeholder-grafana-c2-dashboard.png)
+### Ps-Beacon Dashboard
+![image](https://github.com/user-attachments/assets/87f93a99-db14-4634-a04f-43a4bd782eb3)
 
 ### **Step 2: Splunk Searches and Alerts**  
 - Log into Splunk (http://localhost:8000)
@@ -431,25 +437,18 @@ Group by: @timestamp (1m interval)
 
 **PowerShell Network Connections:**
 ```
-index=sysmon EventCode=3 Image="*powershell.exe*"
-| stats count by DestinationIp, DestinationPort
-| sort -count
+index=sysmon EventCode=3
 ```
 
 **Beaconing Detection Search:**
 ```
-index=sysmon EventCode=3 Image="*powershell.exe*"
-| bucket span=1m _time
-| stats count as connection_count by _time, Computer, User, DestinationIp
+index=sysmon EventCode=3 Image="*\\powershell.exe"
+| bucket span=5m _time
+| stats count as connection_count by _time, User, DestinationIp
 | where connection_count >= 3
 ```
 
-**Create a Splunk Alert:**
-1. Save the above search as an alert
-2. Set to run every 5 minutes
-3. Configure email notifications
-
-![Splunk Dashboard](https://github.com/user-attachments/assets/placeholder-splunk-search.png)
+![image](https://github.com/user-attachments/assets/263178ff-c861-429c-b205-039617b2c38b)
 
 ### **Step 3: Suricata Rules for Network Detection**  
 Create a custom Suricata rule to detect repetitive connections:
@@ -468,9 +467,6 @@ alert tcp any any -> any any (msg:"Potential C2 Beaconing Activity"; flow:establ
 # Reload Suricata rules
 sudo systemctl reload suricata
 ```
-
-![Suricata Alerts](https://github.com/user-attachments/assets/placeholder-suricata-c2-alerts.png)
-
 ---
 
 ## 📊 MITRE ATT&CK Alignment  
@@ -516,15 +512,8 @@ For a SOC Analyst role, this project demonstrates practical skills in:
 
 ---
 
-## 📜 Resume Impact  
-
-> "Developed a MITRE-based detection lab to identify PowerShell C2 beaconing using Sysmon, Winlogbeat, Splunk UF, and Suricata. Integrated alerts via ElastAlert2 with email notifications. Built real-time dashboards in Grafana and Splunk to visualize endpoint and network behavior."
-
----
-
 ## 📬 Contact  
-👤 **Your Name**  
-💻 **GitHub:** [Your GitHub Profile]()  
-📧 **LinkedIn:** [Your LinkedIn Profile]()  
+👤 **Arunkumar R**    
+📧 **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/0xarun)  
 
 ---
