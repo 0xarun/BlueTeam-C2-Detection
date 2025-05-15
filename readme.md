@@ -62,8 +62,6 @@ Follow these steps to install and configure Sysmon:
 ### **2️⃣ Install Splunk Universal Forwarder**  
 Follow these steps to install Splunk UF:  
 
-1. **Download Splunk Universal Forwarder:**
-   
 1. Download Splunk Universal Forwarder
 2. Install Splunk Universal Forwarder
 3. Configure Splunk Universal Forwarder to Forward Logs
