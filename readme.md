@@ -381,7 +381,7 @@ while ($true) {
 🔹 **Execute the script in PowerShell**  
 ```powershell
 # Run as Administrator 
-Set-ExecutionPolicy Bypass -Process Scope
+Set-ExecutionPolicy Bypass -Scope Process
 .\beacon.ps1
 ```
 ---
