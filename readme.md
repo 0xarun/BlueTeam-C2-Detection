@@ -165,7 +165,7 @@ sudo /opt/splunk/bin/splunk add index suricata -auth admin:changeme
 
 Access Splunk Web UI at http://localhost:8000
 
-![Splunk](images/placeholder-splunk-dashboard.png)
+![image](https://github.com/user-attachments/assets/8b17959f-0c30-40df-9aec-236aced6afa2)
 
 ### **5️⃣ Install Elasticsearch**  
 Follow these steps to install Elasticsearch:  
@@ -331,7 +331,7 @@ timeframe:
 filter:
 - query:
     query_string:
-      query: "process.image: \"*powershell.exe\" AND event.code:3"
+      query: "event.code:3 AND process.name:*powershell.exe"
 alert:
 - email
 email:
@@ -340,9 +340,9 @@ alert_subject: "PowerShell Potential C2 Beaconing Detected"
 alert_text: "Detected 5 or more PowerShell network connections within 5 minute.\n
 \nSource Host: {0}\nSource User: {1}\nDestination IPs: {2}"
 alert_text_args:
-- winlog.computer_name
-- winlog.event_data.User
-- winlog.event_data.DestinationIp
+- host.hostname
+- user.name
+- destination.ip
 ```
 
 ```bash
