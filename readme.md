@@ -1,6 +1,4 @@
----
-
-# 🛡️ MITRE-based Detection Lab  
+# 🛡️ BlueTeam C2 Detection Lab  
 
 ## 📌 Project Description  
 This project demonstrates how to build a **complete blue-team detection lab** inspired by real-world SOC operations, centered around detecting malicious behaviors like **Command and Control (C2) beaconing** and network threats.
@@ -72,7 +70,7 @@ Follow these steps to install Splunk UF:
    ```
 2. **Configure Splunk UF for Sysmon:**
    ```powershell
-   # Create inputs.conf file in C:\Program Files\SplunkUniversalForwarder\etc\system\local\
+   #Create inputs.conf file in C:\Program Files\SplunkUniversalForwarder\etc\system\local\
    ```
    **inputs.conf:**
    ```
@@ -101,6 +99,7 @@ Follow these steps to install Splunk UF:
    ```powershell
    Restart-Service "SplunkForwarder"
    ```
+### Note: Make sure Splunk UF running as local system account.
 
 ### **3️⃣ Install Winlogbeat**  
 Follow these steps to install and configure Winlogbeat:  
@@ -204,7 +203,6 @@ Verify with: `curl http://localhost:9200`
 
 ![image](https://github.com/user-attachments/assets/ef1020a1-daf1-4c98-a863-b38739381e09)
 
-
 ### **6️⃣ Install Grafana**  
 Follow these steps to install Grafana:  
 
@@ -226,7 +224,6 @@ sudo systemctl start grafana-server
 Access Grafana at http://localhost:3000 with default credentials admin/admin
 
 ![image](https://github.com/user-attachments/assets/75a4e743-8ad1-48d1-86ac-9a8bc4100155)
-
 
 ### **7️⃣ Install Suricata**  
 Install and configure Suricata NIDS:  
@@ -429,6 +426,7 @@ Logs
 ```
 ![image](https://github.com/user-attachments/assets/31847cbf-6dae-4607-8bdf-46381603a4d3)
 
+
 ### Ps-Beacon Dashboard
 ![image](https://github.com/user-attachments/assets/87f93a99-db14-4634-a04f-43a4bd782eb3)
 
@@ -450,13 +448,18 @@ index=sysmon EventCode=3 Image="*\\powershell.exe"
 ```
 ![image](https://github.com/user-attachments/assets/263178ff-c861-429c-b205-039617b2c38b)
 
-### **Step 4: Elastalert Receive Email**
+### **Step 4: Elastalert Receive Alerts**
 
+```
+Manually Run: 
+   elastalert --verbose --config config.yml
+Wait for few minutes.. 
+```
 ![image](https://github.com/user-attachments/assets/e5f8084f-2bc3-429e-8be2-c7ffb9bcbd94)
 
 ![image](https://github.com/user-attachments/assets/b3dcdffd-a732-4ef7-b093-0ee0496c8988)
  
-### **Step 3: Suricata Rules for Network Detection**  
+### NOT TESTED **Step 3: Suricata Rules for Network Detection**  
 Create a custom Suricata rule to detect repetitive connections:
 
 ```bash
@@ -499,27 +502,10 @@ This detection lab covers the following MITRE ATT&CK techniques:
 
 ---
 
-## 🧠 What I Learned  
-
-From building this detection lab, I gained hands-on experience with:
-
-- Setting up and configuring enterprise-grade monitoring tools
-- Understanding the complete security monitoring pipeline
-- Writing effective detection rules based on behavior, not just IOCs
-- Building meaningful visualizations that highlight suspicious patterns
-- Implementing real-time alerting for security events
-- Using the MITRE ATT&CK framework to categorize and understand threats
-
-For a SOC Analyst role, this project demonstrates practical skills in:
-1. Log collection and management
-2. Detection engineering
-3. Alert triage and response
-4. Visualization and reporting
-
----
-
 ## 📬 Contact  
 👤 **Arunkumar R**    
 📧 **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/0xarun)  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0xarun-blue?logo=linkedin&style=for-the-badge)](https://linkedin.com/in/0xarun)
+[![X](https://img.shields.io/badge/X-@0xarun-black?logo=twitter&style=for-the-badge)](https://x.com/0xarun)
 
 ---
