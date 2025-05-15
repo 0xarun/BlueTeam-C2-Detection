@@ -202,7 +202,8 @@ sudo systemctl start elasticsearch
 
 Verify with: `curl http://localhost:9200`
 
-![Elasticsearch](images/elasticsearch-running.png)
+![image](https://github.com/user-attachments/assets/ef1020a1-daf1-4c98-a863-b38739381e09)
+
 
 ### **6️⃣ Install Grafana**  
 Follow these steps to install Grafana:  
@@ -330,13 +331,13 @@ timeframe:
 filter:
 - query:
     query_string:
-      query: "winlog.event_data.Image.keyword: \"*powershell.exe\" AND winlog.event_id:3"
+      query: "process.image: \"*powershell.exe\" AND event.code:3"
 alert:
 - email
 email:
 - your_email@gmail.com
 alert_subject: "PowerShell Potential C2 Beaconing Detected"
-alert_text: "Detected 5 or more PowerShell network connections within 1 minute.\n
+alert_text: "Detected 5 or more PowerShell network connections within 5 minute.\n
 \nSource Host: {0}\nSource User: {1}\nDestination IPs: {2}"
 alert_text_args:
 - winlog.computer_name
