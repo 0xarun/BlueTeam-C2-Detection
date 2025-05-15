@@ -9,7 +9,7 @@ This project demonstrates how to build a **complete blue-team detection lab** in
 ✅ **Monitoring network traffic** with Suricata NIDS.  
 ✅ **Visualizing threats** using Grafana dashboards connected to Elasticsearch.  
 ✅ **Creating real-time alerts** via ElastAlert for suspicious behaviors.  
-✅ **(Bonus)** Simulating C2 beaconing with PowerShell for testing detections.  
+✅ **Beaconing C2** Simulating C2 beaconing with PowerShell for testing detections.  
 
 By implementing this detection lab, you can **gain hands-on SOC experience**, understand the security monitoring pipeline, and prepare for security analyst roles.  
 
@@ -31,13 +31,13 @@ By implementing this detection lab, you can **gain hands-on SOC experience**, un
 
 ## 🛠️ Installation & Setup  
 
-### VM-1 for Windows 10 (Victim)
+### VM-1 for Windows Server
 
 **Specifications**
 
 - **RAM:** 4GB+
-- **HDD:** 60GB+
-- **OS:** Windows 10 Pro
+- **HDD:** 50GB+
+- **OS:** Windows Server 2019
 
 ### **1️⃣ Install Sysmon**  
 Follow these steps to install and configure Sysmon:  
@@ -61,8 +61,6 @@ Follow these steps to install and configure Sysmon:
    Get-Service sysmon64
    ```
 
-![Sysmon](https://github.com/user-attachments/assets/placeholder-sysmon-running.png)
-
 ### **2️⃣ Install Splunk Universal Forwarder**  
 Follow these steps to install Splunk UF:  
 
@@ -70,31 +68,39 @@ Follow these steps to install Splunk UF:
    ```powershell
    # Download Splunk UF from Splunk website and save to C:\
    # Navigate to downloaded MSI file location
+   # Install Splunk UF
    ```
-
-2. **Install with command line (silent mode):**
-   ```powershell
-   msiexec.exe /i splunkforwarder.msi AGREETOLICENSE=Yes SPLUNKUSERNAME=admin SPLUNKPASSWORD=changeme RECEIVING_INDEXER="<KALI_IP>:9997" WINEVENTLOG_SECURITY=1 WINEVENTLOG_SYSTEM=1 WINEVENTLOG_APPLICATION=1 /quiet
-   ```
-
-3. **Configure Splunk UF for Sysmon:**
+2. **Configure Splunk UF for Sysmon:**
    ```powershell
    # Create inputs.conf file in C:\Program Files\SplunkUniversalForwarder\etc\system\local\
    ```
-   
-   **Content for inputs.conf:**
+   **inputs.conf:**
    ```
+   [default]
+   host = WIN-FR3H8BJTJ78
+   
+   [WinEventLog://Application]
+   disabled = 0
+   index = wineventlog
+   
+   [WinEventLog://System]
+   disabled = 0
+   index = wineventlog
+   
+   [WinEventLog://Security]
+   disabled = 0
+   index = wineventlog
+   
    [WinEventLog://Microsoft-Windows-Sysmon/Operational]
    disabled = 0
    index = sysmon
+   renderXml = true
    ```
 
 4. **Restart Splunk UF service:**
    ```powershell
    Restart-Service "SplunkForwarder"
    ```
-
-![Splunk UF](https://github.com/user-attachments/assets/placeholder-splunk-uf-running.png)
 
 ### **3️⃣ Install Winlogbeat**  
 Follow these steps to install and configure Winlogbeat:  
@@ -130,14 +136,12 @@ Follow these steps to install and configure Winlogbeat:
    Start-Service winlogbeat
    ```
 
-![Winlogbeat](https://github.com/user-attachments/assets/placeholder-winlogbeat-running.png)
-
 ### VM-2 for Kali Linux (SIEM + NIDS Server)
 
 **Specifications**
 
-- **RAM:** 8GB+
-- **HDD:** 80GB+
+- **RAM:** 4GB+
+- **HDD:** 0GB+
 - **OS:** Kali Linux
 
 ### **4️⃣ Install Splunk Server**  
@@ -161,7 +165,7 @@ sudo /opt/splunk/bin/splunk add index suricata -auth admin:changeme
 
 Access Splunk Web UI at http://localhost:8000
 
-![Splunk](https://github.com/user-attachments/assets/placeholder-splunk-dashboard.png)
+![Splunk](images/placeholder-splunk-dashboard.png)
 
 ### **5️⃣ Install Elasticsearch**  
 Follow these steps to install Elasticsearch:  
@@ -184,7 +188,9 @@ sudo nano /etc/elasticsearch/elasticsearch.yml
 ```yaml
 network.host: 0.0.0.0
 http.port: 9200
-discovery.type: single-node
+
+xpack.security.enabled: false 
+xpack.security.transport.ssl.enabled: false
 ```
 
 ```bash
@@ -196,7 +202,7 @@ sudo systemctl start elasticsearch
 
 Verify with: `curl http://localhost:9200`
 
-![Elasticsearch](https://github.com/user-attachments/assets/placeholder-elasticsearch-running.png)
+![Elasticsearch](images/elasticsearch-running.png)
 
 ### **6️⃣ Install Grafana**  
 Follow these steps to install Grafana:  
@@ -218,7 +224,7 @@ sudo systemctl start grafana-server
 
 Access Grafana at http://localhost:3000 with default credentials admin/admin
 
-![Grafana](https://github.com/user-attachments/assets/placeholder-grafana-dashboard.png)
+![Grafana](images/grafana-dashboard.png)
 
 ### **7️⃣ Install Suricata**  
 Install and configure Suricata NIDS:  
@@ -267,27 +273,20 @@ sudo systemctl enable suricata
 sudo systemctl start suricata
 ```
 
-![Suricata](https://github.com/user-attachments/assets/placeholder-suricata-alerts.png)
-
 ### **8️⃣ Setup ElastAlert 2**  
 Install and configure ElastAlert for email notifications:  
 
 ```bash
 # Install Python packages
-sudo apt-get install python3-pip python3-dev libffi-dev -y
+pip3 install elastalert
 
-# Clone ElastAlert 2
-git clone https://github.com/jertel/elastalert2.git
-cd elastalert2
-
-# Install requirements
-pip3 install -r requirements.txt
+# Create ElastAlert Directory
+mkdir elastalert
+cd elastalert
 
 # Configure ElastAlert
-cp config.yaml.example config.yaml
 nano config.yaml
 ```
-
 **Update config.yaml with SMTP and Elasticsearch details:**
 ```yaml
 # Basic configuration
@@ -346,11 +345,16 @@ alert_text_args:
 
 ```bash
 # Run ElastAlert
-python3 -m elastalert.elastalert --verbose
+elastalert-create-index --config config.yaml
+elastalert --verbose --config config.yaml
 ```
 
-![ElastAlert](https://github.com/user-attachments/assets/placeholder-elastalert-email.png)
-
+```bash
+# Output
+INFO:elastalert:Queried rule Detect Frequent PowerShell Network Connections from 2024-05-13 11:12:00 to 2024-05-13 11:14:00: 5 hits
+INFO:elastalert:Alert for Detect Frequent PowerShell Network Connections at 2024-05-13 11:14:20
+INFO:elastalert:Sent email to ['your_email@gmail.com']
+```
 ---
 
 ## 🔄 Workflow - Simulating & Detecting C2 Beaconing  
@@ -368,39 +372,18 @@ This workflow demonstrates how to simulate and detect C2 beaconing:
 🔹 **Create beacon.ps1 on Windows machine**  
 ```powershell
 # beacon.ps1 - Simulate C2 beaconing behavior
-$destinations = @(
-    "http://<KALI_IP>:8080",
-    "http://<KALI_IP>:8888",
-    "http://<KALI_IP>:9999"
-)
-
-$logFile = "C:\beacon_activity.log"
-"Beacon activity started at $(Get-Date)" | Out-File -FilePath $logFile
-
 while ($true) {
-    $destination = $destinations | Get-Random
-    try {
-        "$(Get-Date) - Connecting to $destination" | Out-File -FilePath $logFile -Append
-        Invoke-WebRequest -Uri $destination -UseBasicParsing -TimeoutSec 5 -ErrorAction SilentlyContinue
-    }
-    catch {
-        # Silent failure is typical of beaconing malware
-    }
-    
-    # Random sleep between 10-20 seconds to simulate realistic beaconing
-    $sleepTime = Get-Random -Minimum 10 -Maximum 20
-    Start-Sleep -Seconds $sleepTime
+    Invoke-WebRequest -Uri "http://KALI_IP:8080/ping" -UseBasicParsing
+    Start-Sleep -Seconds 30
 }
 ```
 
 🔹 **Execute the script in PowerShell**  
 ```powershell
-# Run as Administrator to ensure proper logging
-Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File C:\beacon.ps1" -Verb RunAs
+# Run as Administrator 
+Set-ExecutionPolicy Bypass -Process Scope
+.\beacon.ps1
 ```
-
-![PowerShell Beaconing](https://github.com/user-attachments/assets/placeholder-powershell-beacon.png)
-
 ---
 
 ## 🚀 Detection & Visualization  
@@ -408,13 +391,15 @@ Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File C:\beacon.
 ### **Step 1: Create Grafana Dashboards**  
 - Log into Grafana (http://localhost:3000) with admin/admin
 - Add Elasticsearch as a data source
+- Add elasticsearch URL : localhost:9200
+- Add Index: winlogbeat-*
+- Done 
 - Create a new dashboard with the following panels:
 
 **PowerShell Network Connections Panel:**
 ```
-Index pattern: winlogbeat-*
 Query:
-  winlog.event_id:3 AND winlog.event_data.Image:*powershell.exe*
+  event_code:3 AND process.name:*powershell.exe*
 Visualization: Time Series
 Metrics: Count
 Group by: @timestamp (Auto interval)
@@ -422,17 +407,15 @@ Group by: @timestamp (Auto interval)
 
 **Top Destination IPs Panel:**
 ```
-Index pattern: winlogbeat-*
 Query:
-  winlog.event_id:3 AND winlog.event_data.Image:*powershell.exe*
+  event_code:3 AND process.name:*powershell.exe*
 Visualization: Table
-Group by: winlog.event_data.DestinationIp.keyword (Terms)
+Group by: destination.ip (Terms)
 Metrics: Count
 ```
 
 **Connection Frequency Heatmap:**
 ```
-Index pattern: winlogbeat-*
 Query:
   winlog.event_id:3 AND winlog.event_data.Image:*powershell.exe*
 Visualization: Heatmap
