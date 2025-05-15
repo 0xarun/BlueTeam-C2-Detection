@@ -63,12 +63,19 @@ Follow these steps to install and configure Sysmon:
 Follow these steps to install Splunk UF:  
 
 1. **Download Splunk Universal Forwarder:**
-   ```powershell
-   # Download Splunk UF from Splunk website and save to C:\
-   # Navigate to downloaded MSI file location
-   # Install Splunk UF
+   
+   Step 1: Download Splunk Universal Forwarder
+   Step 2: Install Splunk Universal Forwarder
+   Step 3: Configure Splunk Universal Forwarder to Forward Logs
+   
+   ```powershell 
+   cd "C:\Program Files\SplunkUniversalForwarder\bin"
+   .\splunk.exe start
+   .\splunk.exe enable boot-start
+   .\splunk.exe add forward-server <SPLUNK_SERVER_IP>:9997
    ```
-2. **Configure Splunk UF for Sysmon:**
+
+3. **Configure Splunk UF for Sysmon:**
    ```powershell
    #Create inputs.conf file in C:\Program Files\SplunkUniversalForwarder\etc\system\local\
    ```
