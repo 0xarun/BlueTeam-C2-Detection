@@ -504,8 +504,9 @@ This detection lab covers the following MITRE ATT&CK techniques:
 
 ## 📬 Contact  
 👤 **Arunkumar R**    
-📧 **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/0xarun)  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0xarun-blue?logo=linkedin&style=for-the-badge)](https://linkedin.com/in/0xarun)
-[![X](https://img.shields.io/badge/X-@0xarun-black?logo=twitter&style=for-the-badge)](https://x.com/0xarun)
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0xarun-blue?logo=linkedin&style=flat-square)](https://linkedin.com/in/0xarun)
+[![X](https://img.shields.io/badge/X-@0xarun-black?logo=twitter&style=flat-square)](https://x.com/0xarun)
+[![GitHub](https://img.shields.io/badge/GitHub-0xarun-171515?logo=github&style=flat-square)](https://github.com/0xarun)
 
 ---
