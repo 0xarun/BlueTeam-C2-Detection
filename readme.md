@@ -373,7 +373,7 @@ This workflow demonstrates how to simulate and detect C2 beaconing:
 # beacon.ps1 - Simulate C2 beaconing behavior
 while ($true) {
     Invoke-WebRequest -Uri "http://KALI_IP:8080/ping" -UseBasicParsing
-    Start-Sleep -Seconds 30
+    Start-Sleep -Seconds 10
 }
 ```
 
