@@ -448,9 +448,14 @@ index=sysmon EventCode=3 Image="*\\powershell.exe"
 | stats count as connection_count by _time, User, DestinationIp
 | where connection_count >= 3
 ```
-
 ![image](https://github.com/user-attachments/assets/263178ff-c861-429c-b205-039617b2c38b)
 
+### **Step 4: Elastalert Receive Email**
+
+![image](https://github.com/user-attachments/assets/e5f8084f-2bc3-429e-8be2-c7ffb9bcbd94)
+
+![image](https://github.com/user-attachments/assets/b3dcdffd-a732-4ef7-b093-0ee0496c8988)
+ 
 ### **Step 3: Suricata Rules for Network Detection**  
 Create a custom Suricata rule to detect repetitive connections:
 
