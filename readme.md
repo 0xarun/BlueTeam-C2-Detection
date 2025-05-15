@@ -64,10 +64,10 @@ Follow these steps to install Splunk UF:
 
 1. **Download Splunk Universal Forwarder:**
    
-   Step 1: Download Splunk Universal Forwarder
-   Step 2: Install Splunk Universal Forwarder
-   Step 3: Configure Splunk Universal Forwarder to Forward Logs
-   
+1. Download Splunk Universal Forwarder
+2. Install Splunk Universal Forwarder
+3. Configure Splunk Universal Forwarder to Forward Logs
+
    ```powershell 
    cd "C:\Program Files\SplunkUniversalForwarder\bin"
    .\splunk.exe start
